@@ -1580,9 +1580,9 @@
           // 発射位置を画面左寄りにセットして発射
           const stageW = document.getElementById("simCanvas").clientWidth || 600;
           if (perspective === "haru") {
-            shipScreenX = Math.min(Math.max(70, shipScreenX), stageW * 0.45);
+            shipScreenX = 80;
           }
-          const originX = (perspective === "haru" ? shipScreenX : stageW * 0.28) + 44;
+          const originX = (perspective === "haru" ? shipScreenX : stageW * 0.22) + 44;
           ball = { active: true, x: originX, startX: originX, trail: [] };
           light = { active: true, x: originX, startX: originX, trail: [] };
           refreshNarration();
@@ -1601,7 +1601,7 @@
             }
           } else {
             // ソラ視点：宇宙船は中央やや左に固定、背景（地上）が左へ流れる
-            shipScreenX = w * 0.28;
+            shipScreenX = w * 0.22;
             worldScroll -= shipPxSpeed * dt;
           }
 
@@ -1625,10 +1625,7 @@
           }
 
           if (fired && switchedView && fireCount >= 1 && !ball.active && !light.active) {
-            App.setNarration(
-              "実験完了！ボールは視点で速さが変わるのに、光だけはどちらの視点でも 1.00c（秒速30万km）のままでした。",
-              "右上の「まとめ」ボタンから、15秒決めゼリフと確認クイズに挑戦しよう！"
-            );
+            App.markSummaryReady();
           }
         },
         draw(ctx, w, h, state) {
@@ -1698,7 +1695,7 @@
           ctx.fillText("光のレーン（誰から見ても常に 1.00c）", 16, lightLaneY - 14);
 
           // 4. 宇宙船の描画（中段に配置し、上下の砲台から出るイメージ）
-          const shipX = perspective === "haru" ? shipScreenX : w * 0.28;
+          const shipX = perspective === "haru" ? shipScreenX : w * 0.22;
           drawShip(ctx, shipX, (ballLaneY + lightLaneY) * 0.5);
 
           // 5. ボールの描画
@@ -1873,7 +1870,7 @@
           if (simTime >= gamma) {
             App.setNarration(
               `【ソラ船内視点】ソラから見ると自分の時計がまっすぐ1往復し、逆に左へ遠ざかるハルの時計が ${(1 / gamma).toFixed(2)} 往復に遅れます！`,
-              switchedView ? "右上の「まとめ」ボタンから、確認クイズと15秒決めゼリフをチェックしよう！" : "等速で動いている限り、どちらから見ても「相手の方が遅れて見える」のが相対性理論のルールです。"
+              switchedView ? "「まとめをして次の巻へ」ボタンから、確認クイズと15秒決めゼリフをチェックしよう！" : "等速で動いている限り、どちらから見ても「相手の方が遅れて見える」のが相対性理論のルールです。"
             );
           } else {
             App.setNarration(
@@ -2305,7 +2302,7 @@
               beta > 0.01
                 ? "ソラは真ん中にいて前後の距離も光の速さも同じなのに、前の光が先着！だからソラにとって「前の雷が先に落ちた」のです。"
                 : "列車が止まっているときは、同じタイミングで落ちます。",
-              switchedView ? "右上の「まとめ」ボタンから、逆算の理由と確認クイズをチェックしよう！" : "ハルは「同時」、ソラは「前が先」。見る人の動き方で「今（同時）」そのものがズレます！"
+              switchedView ? "「まとめをして次の巻へ」ボタンから、逆算の理由と確認クイズをチェックしよう！" : "ハルは「同時」、ソラは「前が先」。見る人の動き方で「今（同時）」そのものがズレます！"
             );
           } else {
             App.setNarration(
@@ -3211,7 +3208,7 @@
         } else if (boostCount >= 5 || beta >= 0.96) {
           App.setNarration(
             `${boostCount}回押して ${beta >= 0.99 ? beta.toFixed(5) : beta.toFixed(2)}c！もう何度押しても 1.00c を超えられず、余ったエネルギーがすべて「動きにくさ（E=mc²）」に変わっています。`,
-            "右上の「まとめ」ボタンから、太陽が輝く理由と確認クイズをチェックしよう！"
+            "「まとめをして次の巻へ」ボタンから、太陽が輝く理由と確認クイズをチェックしよう！"
           );
         } else if (boostCount >= 1) {
           App.setNarration(
@@ -3633,7 +3630,7 @@
         } else {
           App.setNarration(
             `【惑星表面 (${gText})】同じ強さの重力でも、中の人の感覚もレーザーの曲がり方（${getDropMeters().toFixed(1)}m）も加速ロケットと100%同じです！`,
-            (switchedEnv && !laser.active) ? "右上の「まとめ」ボタンから、確認クイズと15秒決めゼリフをチェックしよう！" : "※ただし地球は丸く中心に引くため、第7巻では「時空の曲がり」へとつながります。"
+            (switchedEnv && !laser.active) ? "「まとめをして次の巻へ」ボタンから、確認クイズと15秒決めゼリフをチェックしよう！" : "※ただし地球は丸く中心に引くため、第7巻では「時空の曲がり」へとつながります。"
           );
         }
       }
@@ -3954,7 +3951,7 @@
             isBlackHole()
               ? "【光子×ブラックホール】外側をかすめた光は大きく曲がって通り抜けます（重力レンズ）！境界の内側に入ると出てこられません。"
               : "【光子（レーザー）】重さのない光も、曲がった時空の中をまっすぐ進むため進路がカーブします（重力レンズ）。",
-            "右上の「まとめ」ボタンで全7巻のフィナーレとGPSの仕組みを確認しよう！"
+            "「まとめをして次の巻へ」ボタンで全7巻のフィナーレとGPSの仕組みを確認しよう！"
           );
         }
       }
@@ -4829,8 +4826,13 @@
         requestAnimationFrame(loop);
       }
 
+      function markSummaryReady() {
+        els.narrationSummaryBtn.classList.add("pulse-ready");
+      }
+
       return {
         start,
+        markSummaryReady,
         setNarration,
         setHUD: setHUDHtml,
         setPhase,
