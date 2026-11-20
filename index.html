@@ -80,7 +80,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-end;
       gap: 10px;
     }
 
@@ -441,6 +441,7 @@
     }
 
     .phase-badge {
+      white-space: nowrap;
       font-size: 11px;
       font-weight: 700;
       padding: 3px 9px;
@@ -451,6 +452,8 @@
     }
 
     .icon-btn {
+      white-space: nowrap;
+      flex-shrink: 0;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--panel-border);
       color: var(--text-main);
@@ -534,7 +537,12 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
+    }
+    .canvas-wrap {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
     }
 
     #simCanvas {
@@ -623,7 +631,7 @@
       background: rgba(6, 9, 19, 0.88);
       backdrop-filter: blur(8px);
       display: none;
-      align-items: center;
+      align-items: flex-start;
       justify-content: center;
       padding: 16px;
     }
@@ -636,6 +644,7 @@
       width: 100%;
       max-width: 520px;
       max-height: 100%;
+      margin: auto 0;
       overflow-y: auto;
       background: #111c33;
       border: 1px solid var(--panel-border);
@@ -1036,6 +1045,29 @@
         text-align: center;
       }
     }
+
+    @media (max-width: 540px) {
+      .narration-bar {
+        margin: 0 8px 8px;
+        padding: 8px 10px;
+        gap: 6px;
+      }
+      .narration-main {
+        font-size: 11.5px;
+        line-height: 1.4;
+      }
+      .summary-cta-btn {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+      .hud-card {
+        padding: 5px 8px;
+      }
+      .app-shell, #simView {
+        padding: 8px 10px;
+        gap: 6px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1167,11 +1199,11 @@
     </header>
 
     <main class="main-stage" id="mainStage">
-      <canvas id="simCanvas"></canvas>
-
-      <div class="stage-top-meta">
-        <span class="slowmo-tag" id="slowmoTag">表示説明</span>
-        <span class="cleared-chip" id="clearedChip">✓ クリア済</span>
+      <div class="canvas-wrap" id="canvasWrap">
+        <canvas id="simCanvas"></canvas>
+        <div class="stage-top-meta">
+          <span class="cleared-chip" id="clearedChip">✓ クリア済</span>
+        </div>
       </div>
 
       <div class="narration-bar">
@@ -1644,7 +1676,7 @@
           ctx.globalAlpha = 1;
 
           // 2. 地面基準グリッド（ハルの基準線）
-          const groundY = h * 0.68;
+          const groundY = h * 0.78;
           ctx.strokeStyle = "rgba(251, 191, 36, 0.25)";
           ctx.lineWidth = 1.5;
           ctx.beginPath();
@@ -1674,8 +1706,8 @@
           ctx.fillText("ハル（地上）", haruX, groundY + 24);
 
           // 3. 上段・下段レーンのガイド
-          const ballLaneY = h * 0.27;
-          const lightLaneY = h * 0.47;
+          const ballLaneY = h * 0.28;
+          const lightLaneY = h * 0.52;
 
           ctx.strokeStyle = "rgba(148, 163, 184, 0.18)";
           ctx.setLineDash([4, 6]);
@@ -1992,8 +2024,8 @@
         draw(ctx, w, h) {
           const gamma = calcGamma(beta);
           const { haruCount, soraCount } = getCounts();
-          const topY = h * 0.19;
-          const bottomY = h * 0.56;
+          const topY = h * 0.20;
+          const bottomY = h * 0.68;
           const clockH = bottomY - topY;
           const progress = Math.min(simTime / gamma, 1.0);
           const maxRunWidth = Math.min(w * 0.30, 220);
@@ -2451,7 +2483,7 @@
         },
         draw(ctx, w, h) {
           const cx = w * 0.5;
-          const trackY = h * 0.54;
+          const trackY = h * 0.48;
           const trainH = 44;
           const gamma = calcGamma(beta);
           const halfLen = perspective === "haru" ? REST_HALF_LEN / gamma : REST_HALF_LEN;
@@ -2905,7 +2937,7 @@
           const earthScreenX = Math.max(58, w * 0.12);
           const maxRangePx = Math.min(w * 0.50, 400);
           const pxPerLY = maxRangePx / (MAX_LY + 0.3);
-          const trackY = h * 0.52;
+          const trackY = h * 0.57;
 
           const remaining = [];
           for (const p of pulses) {
@@ -2946,7 +2978,7 @@
           updateHUD();
         },
         draw(ctx, w, h) {
-          const trackY = h * 0.52;
+          const trackY = h * 0.57;
           const earthScreenX = Math.max(58, w * 0.12);
           const maxRangePx = Math.min(w * 0.50, 400);
           const pxPerLY = maxRangePx / (MAX_LY + 0.3);
@@ -3293,8 +3325,8 @@
              ------------------------------------------------------------- */
           const leftX = isWide ? w * 0.05 : w * 0.04;
           const leftW = isWide ? w * 0.36 : w * 0.39;
-          const leftY = isWide ? h * 0.14 : h * 0.13;
-          const leftH = isWide ? h * 0.52 : h * 0.46;
+          const leftY = h * 0.11;
+          const leftH = h * 0.76;
 
           ctx.fillStyle = "rgba(15, 23, 42, 0.62)";
           ctx.strokeStyle = "rgba(148, 163, 184, 0.22)";
@@ -3379,8 +3411,8 @@
              ------------------------------------------------------------- */
           const panelX = isWide ? w * 0.44 : w * 0.46;
           const panelW = isWide ? w * 0.50 : w * 0.49;
-          const panelY = isWide ? h * 0.14 : h * 0.13;
-          const panelH = isWide ? h * 0.52 : h * 0.46;
+          const panelY = h * 0.11;
+          const panelH = h * 0.76;
 
           ctx.fillStyle = "rgba(15, 23, 42, 0.62)";
           ctx.strokeStyle = "rgba(148, 163, 184, 0.22)";
@@ -3703,10 +3735,10 @@
           ctx.globalAlpha = 1;
 
           const boxW = Math.min(340, w * 0.72);
-          const boxH = Math.min(190, h * 0.48);
+          const boxH = Math.min(210, h * 0.56);
           const boxX = (w - boxW) * 0.5;
-          const baseRocketY = h * 0.25;
-          const planetBoxY = h * 0.16;
+          const baseRocketY = h * 0.28;
+          const planetBoxY = h * 0.20;
           const gText = formatG(gVal);
           const maxDrop = getDropFraction() * boxH;
           const curP = laser.active ? laser.progress : (firedOnce ? 1.0 : 0);
@@ -4048,7 +4080,7 @@
         },
         draw(ctx, w, h) {
           const cx = w * 0.5;
-          const cy = h * 0.44;
+          const cy = h * 0.50;
 
           // 1. 歪む時空グリッド（中心に向かって引き込まれ、中心ほど色が変わる＝時間遅れ）
           const gridSpacing = 34;
@@ -4261,7 +4293,6 @@
         soraRole: document.getElementById("soraRole"),
         haruValue: document.getElementById("haruValue"),
         soraValue: document.getElementById("soraValue"),
-        slowmoTag: document.getElementById("slowmoTag"),
         clearedChip: document.getElementById("clearedChip"),
         narrationText: document.getElementById("narrationText"),
         narrationNote: document.getElementById("narrationNote"),
@@ -4290,6 +4321,7 @@
         actionBtn1: document.getElementById("actionBtn1"),
         actionBtn2: document.getElementById("actionBtn2"),
         mainStage: document.getElementById("mainStage"),
+        canvasWrap: document.getElementById("canvasWrap"),
         canvas: document.getElementById("simCanvas")
       };
 
@@ -4310,6 +4342,14 @@
         els.phaseBadge.textContent = labels[phase] || phase;
         els.predictOverlay.classList.toggle("active", phase === "predict");
         els.summaryOverlay.classList.toggle("active", phase === "summary");
+        const activeOverlay = phase === "predict" ? els.predictOverlay : (phase === "summary" ? els.summaryOverlay : null);
+        if (activeOverlay) {
+          const card = activeOverlay.querySelector(".overlay-card");
+          if (card) {
+            card.scrollTop = 0;
+            requestAnimationFrame(() => { card.scrollTop = 0; });
+          }
+        }
       }
 
       function setNarration(main, note = "") {
@@ -4366,7 +4406,7 @@
 
       function resizeCanvas() {
         if (currentView !== "sim") return;
-        const rect = els.mainStage.getBoundingClientRect();
+        const rect = els.canvasWrap.getBoundingClientRect();
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         state.width = rect.width;
         state.height = rect.height;
@@ -4393,7 +4433,6 @@
         // UI初期化
         els.volBadge.textContent = cfg.badge;
         els.appTitle.textContent = cfg.title;
-        els.slowmoTag.textContent = cfg.slowmoText;
         els.haruName.textContent = activeVol.haruName;
         els.soraName.textContent = activeVol.soraName;
         els.haruRole.textContent = cfg.haruRole;
